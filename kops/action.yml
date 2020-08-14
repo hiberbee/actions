@@ -1,0 +1,28 @@
+name: Kops Github Action
+description: Setup Kops and all required dependencies
+author: hiberbee
+branding:
+  icon: anchor
+  color: blue
+inputs:
+  kops-version:
+    default: 1.17.1
+    description: Set Skaffold version
+    required: false
+  kubeconfig:
+    default: ''
+    description: Kubernetes cluster configuration file
+    required: false
+  command:
+    description: Skaffold command to execute
+    required: true
+  state-store:
+    description: Kops state store
+    required: true
+  cluster-name:
+    description: Kops cluster name
+    required: true
+outputs: {}
+runs:
+  using: node12
+  main: index.js
