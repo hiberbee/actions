@@ -7,3 +7,5 @@ updates:
       interval: weekly
     reviewers:
       - vladyslavvolkov
+    assignees:
+      - vladyslavvolkov
