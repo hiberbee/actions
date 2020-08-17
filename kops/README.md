@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Kops
-        uses: hiberbee/github-action-kops@master
+        uses: hiberbee/actions/kops@latest
         with:
           command: validate cluster
           cluster-name: k8s.hiberbee.net
