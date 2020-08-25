@@ -7,7 +7,7 @@ branding:
 inputs:
   kops-version:
     default: 1.18.0
-    description: Set Skaffold version
+    description: Set Kops version
     required: false
   kubeconfig:
     default: ''
@@ -25,4 +25,4 @@ inputs:
 outputs: {}
 runs:
   using: node12
-  main: index.js
+  main: dist/index.js
