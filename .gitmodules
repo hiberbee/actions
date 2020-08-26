@@ -3,7 +3,7 @@
 	url = git@github.com:hiberbee/github-action-skaffold
 [submodule "kops"]
 	path = kops
-	url = git@github.com:hiberbee/github-action-kops
+	url = git@github.com:hiberbee/github-action-kops.git
 [submodule "minikube"]
 	path = minikube
 	url = git@github.com:hiberbee/github-action-minikube
