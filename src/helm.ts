@@ -25,6 +25,9 @@ const workspaceDir = getWorkspaceDir()
 const cacheDir = join(homeDir, '.cache')
 const helmCacheDir = join(cacheDir, 'helm')
 const platform = getOsPlatform()
+const plugins = new Map<string, URL>()
+  .set('diff', new URL('https://github.com/databus23/helm-diff'))
+  .set('secrets', new URL('https://github.com/zendesk/helm-secrets'))
 
 async function run(): Promise<void> {
   const helmVersion = getInput('helm-version')
@@ -33,10 +36,6 @@ async function run(): Promise<void> {
   const helmfileConfig = getInput('helmfile-config')
   const helmUrl = `https://get.helm.sh/helm-v${helmVersion}-${platform}-amd64.tar.gz`
   const helmfileUrl = `https://github.com/roboll/helmfile/releases/download/v${helmfileVersion}/helmfile_${platform}_amd64`
-  const plugins = {
-    diff: 'https://github.com/databus23/helm-diff',
-    secrets: 'https://github.com/zendesk/helm-secrets',
-  }
   const repositoryConfigPath = join(workspaceDir, repositoryConfig)
   const helmfileConfigPath = join(workspaceDir, helmfileConfig)
 
@@ -47,9 +46,9 @@ async function run(): Promise<void> {
     await download(helmUrl, join(binDir, 'helm')).then(() => {
       getInput('plugins')
         .split(',')
-        .filter(plugins.hasOwnProperty)
-        .map((name: string) => plugins[name])
-        .forEach((url: string) => exec('helm', ['plugin', 'install', url]))
+        .filter(plugins.has)
+        .map(name => plugins.get(name) as URL)
+        .forEach((url: URL) => exec('helm', ['plugin', 'install', url.toString()]))
     })
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
