@@ -1,4 +1,4 @@
-import { exportVariable, getInput, setFailed } from '@actions/core'
+import { exportVariable, getInput, setFailed, info } from '@actions/core'
 import { exec } from '@actions/exec'
 import { download, getOsPlatform, getHomeDir, getBinDir, getWorkspaceDir } from './index'
 import { mkdirP } from '@actions/io'
@@ -38,18 +38,19 @@ async function run(): Promise<void> {
   const helmfileUrl = `https://github.com/roboll/helmfile/releases/download/v${helmfileVersion}/helmfile_${platform}_amd64`
   const repositoryConfigPath = join(workspaceDir, repositoryConfig)
   const helmfileConfigPath = join(workspaceDir, helmfileConfig)
+  const pluginUrls = getInput('plugins')
+    .split(',')
+    .filter(name => plugins.has(name))
+    .map(name => plugins.get(name) as URL)
 
   try {
     exportVariable('XDG_CACHE_HOME', cacheDir)
     const repositoryArgs = (await exists(repositoryConfigPath)) ? ['--repository-config', repositoryConfigPath] : []
     await mkdirP(helmCacheDir)
-    await download(helmUrl, join(binDir, 'helm')).then(() => {
-      getInput('plugins')
-        .split(',')
-        .filter(name => plugins.has(name))
-        .map(name => plugins.get(name) as URL)
-        .forEach((url: URL) => exec('helm', ['plugin', 'install', url.toString()]))
-    })
+    await download(helmUrl, join(binDir, 'helm'))
+    for (const url of pluginUrls) {
+      await exec('helm', ['plugin', 'install', url.toString()]).catch(info)
+    }
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
