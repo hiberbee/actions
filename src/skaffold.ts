@@ -1,4 +1,4 @@
-import { cacheDir, cacheFile } from '@actions/tool-cache'
+import { cacheDir } from '@actions/tool-cache'
 import { exec } from '@actions/exec'
 import { getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
