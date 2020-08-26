@@ -46,7 +46,7 @@ async function run(): Promise<void> {
     await download(helmUrl, join(binDir, 'helm')).then(() => {
       getInput('plugins')
         .split(',')
-        .filter(plugins.has)
+        .filter(name => plugins.has(name))
         .map(name => plugins.get(name) as URL)
         .forEach((url: URL) => exec('helm', ['plugin', 'install', url.toString()]))
     })
