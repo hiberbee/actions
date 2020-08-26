@@ -33,6 +33,10 @@ async function run(): Promise<void> {
   const helmfileConfig = getInput('helmfile-config')
   const helmUrl = `https://get.helm.sh/helm-v${helmVersion}-${platform}-amd64.tar.gz`
   const helmfileUrl = `https://github.com/roboll/helmfile/releases/download/v${helmfileVersion}/helmfile_${platform}_amd64`
+  const plugins = {
+    diff: 'https://github.com/databus23/helm-diff',
+    secrets: 'https://github.com/zendesk/helm-secrets',
+  }
   const repositoryConfigPath = join(workspaceDir, repositoryConfig)
   const helmfileConfigPath = join(workspaceDir, helmfileConfig)
 
@@ -40,7 +44,13 @@ async function run(): Promise<void> {
     exportVariable('XDG_CACHE_HOME', cacheDir)
     const repositoryArgs = (await exists(repositoryConfigPath)) ? ['--repository-config', repositoryConfigPath] : []
     await mkdirP(helmCacheDir)
-    await download(helmUrl, join(binDir, 'helm'))
+    await download(helmUrl, join(binDir, 'helm')).then(() => {
+      getInput('plugins')
+        .split(',')
+        .filter(plugins.hasOwnProperty)
+        .map((name: string) => plugins[name])
+        .forEach((url: string) => exec('helm', ['plugin', 'install', url]))
+    })
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
