@@ -60,8 +60,8 @@ async function run(): Promise<void> {
     }
     await download(minikubeUrl, join(binDir, 'minikube'))
     await download(kubectlUrl, join(binDir, 'kubectl'))
-    await cacheDir(join(minikubeHomeDir, 'cache'), 'minikube', minikubeVersion)
     await exec('minikube', getArgsFromInput()).then(() => exec('minikube', ['ip'], options))
+    await cacheDir(join(minikubeHomeDir, 'cache'), 'minikube', minikubeVersion)
   } catch (error) {
     setFailed(error.message)
   }
