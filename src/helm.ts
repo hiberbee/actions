@@ -5,6 +5,24 @@ import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
+enum HelmfileArgs {
+  FILE = '--file',
+  ENVIRONMENT = '--environment',
+  INTERACTIVE = '--interactive',
+  KUBE_CONTEXT = '--kube-context',
+  LOG_LEVEL = '--log-level',
+}
+
+function getHelmfileArgsFromInput(): string[] {
+  return getInput('helmfile-command')
+    .split(' ')
+    .concat(
+      Object.values(HelmfileArgs)
+        .filter(key => getInput(key) !== '')
+        .map(key => `--${key}=${getInput(key)}`),
+    )
+}
+
 const homeDir = getHomeDir()
 const binDir = getBinDir()
 const workspaceDir = getWorkspaceDir()
@@ -30,7 +48,7 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
     if (getInput('helmfile-command') !== '') {
-      await exec('helmfile', getInput('helmfile-command').split(' '))
+      await exec('helmfile', getHelmfileArgsFromInput())
     } else if (getInput('helm-command') !== '') {
       await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
     }
