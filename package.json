@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "readme": "README.md",
-  "description": "Github Actions monorepo",
+  "description": "Bundle of Dev/Test/Ops Github Actions for Cloud-Native apps CI/CD pipelines execution",
   "keywords": [
     "github-actions",
     "ci-cd",

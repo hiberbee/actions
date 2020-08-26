@@ -5,16 +5,17 @@ import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
-enum HelmfileArgs {}
+enum HelmfileArgs {
+  ENVIRONMENT = 'environment',
+  INTERACTIVE = 'interactive',
+  KUBE_CONTEXT = 'kube-context',
+  LOG_LEVEL = 'log-level',
+}
 
 function getHelmfileArgsFromInput(): string[] {
-  return getInput('helmfile-command')
-    .split(' ')
-    .concat(
-      Object.values(HelmfileArgs)
-        .filter(key => getInput(key) !== '')
-        .map(key => `--${key}=${getInput(key)}`),
-    )
+  return Object.values(HelmfileArgs)
+    .filter(key => getInput(key) !== '')
+    .map(key => `--${key}=${getInput(key)}`)
 }
 
 const homeDir = getHomeDir()
@@ -44,8 +45,10 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
     if (getInput('helmfile-command') !== '') {
-      const helmfileConfigArgs = (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : []
-      await exec('helmfile', getHelmfileArgsFromInput().concat(helmfileConfigArgs))
+      const globalArgs = getHelmfileArgsFromInput().concat(
+        (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [],
+      )
+      await exec('helmfile', globalArgs.concat(getInput('helmfile-command').split(' ')))
     } else if (getInput('helm-command') !== '') {
       await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
     }
