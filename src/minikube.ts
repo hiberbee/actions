@@ -24,14 +24,16 @@ const platform = getOsPlatform()
 const suffix = platform === 'win32' ? '.exe' : ''
 
 function getArgsFromInput(): string[] {
+  const addons = getInput('addons')
+    .split(',')
+    .filter(item => item !== '')
   return ['start', '--embed-certs']
     .concat(
       Object.values(MinikubeArgs)
         .filter(key => getInput(key) !== '')
         .map(key => `--${key}=${getInput(key)}`),
     )
-    .concat(getInput('addons').split(','))
-    .map(key => `--addons=${key}`)
+    .concat(addons.length > 0 ? addons.map(key => `--addons=${key}`) : '')
 }
 
 async function run(): Promise<void> {
