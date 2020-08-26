@@ -5,6 +5,7 @@ import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
+// noinspection JSUnusedGlobalSymbols
 enum HelmfileArgs {
   ENVIRONMENT = 'environment',
   INTERACTIVE = 'interactive',
