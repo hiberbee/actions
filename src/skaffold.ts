@@ -1,4 +1,4 @@
-import { cacheDir } from '@actions/tool-cache'
+import { cacheDir, cacheFile } from '@actions/tool-cache'
 import { exec } from '@actions/exec'
 import { getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
@@ -21,14 +21,14 @@ enum SkaffoldArgs {
 }
 
 const homeDir = getHomeDir()
-const skaffoldHomeDir = join(homeDir, '.skaffold')
-const skaffoldCacheDir = join(skaffoldHomeDir, 'cache')
 const binDir = getBinDir()
+const skaffoldHomeDir = join(homeDir, '.skaffold')
+const skaffoldCacheFile = join(skaffoldHomeDir, 'cache')
 
 function getArgsFromInput(): string[] {
   return getInput('command')
     .split(' ')
-    .concat(`--cache-file=${skaffoldCacheDir}`)
+    .concat(`--cache-file=${skaffoldCacheFile}`)
     .concat(
       Object.values(SkaffoldArgs)
         .filter(key => getInput(key) !== '')
@@ -46,13 +46,13 @@ async function run(): Promise<void> {
   const containerStructureTestUrl = `https://storage.googleapis.com/container-structure-test/v${containerStructureTestVersion}/container-structure-test-${platform}-amd64`
 
   try {
-    await mkdirP(skaffoldCacheDir)
+    await mkdirP(skaffoldHomeDir)
     await download(skaffoldTestUrl, join(binDir, 'skaffold'))
     if (getInput('skip-tests') === 'false') {
       await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
     }
-    await cacheDir(skaffoldCacheDir, 'skaffold', skaffoldVersion)
     await exec('skaffold', getArgsFromInput())
+    await cacheDir(skaffoldHomeDir, 'skaffold', skaffoldVersion)
   } catch (error) {
     setFailed(error.message)
   }
