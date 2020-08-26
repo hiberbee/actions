@@ -13,13 +13,11 @@ enum HelmfileArgs {
 }
 
 function getHelmfileArgsFromInput(): string[] {
-  return getInput('helmfile-command')
-    .split(' ')
-    .concat(
-      Object.values(HelmfileArgs)
-        .filter(key => getInput(key) !== '')
-        .map(key => `--${key}=${getInput(key)}`),
-    )
+  const command = getInput('helmfile-command').split(' ')
+  Object.values(HelmfileArgs)
+    .filter(key => getInput(key) !== '')
+    .forEach(key => command.concat(`--${key}`, getInput(key)))
+  return command
 }
 
 const homeDir = getHomeDir()
