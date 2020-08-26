@@ -5,19 +5,16 @@ import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
-enum HelmfileArgs {
-  ENVIRONMENT = 'environment',
-  INTERACTIVE = 'interactive',
-  KUBE_CONTEXT = 'kube-context',
-  LOG_LEVEL = 'log-level',
-}
+enum HelmfileArgs {}
 
 function getHelmfileArgsFromInput(): string[] {
-  const command = getInput('helmfile-command').split(' ')
-  Object.values(HelmfileArgs)
-    .filter(key => getInput(key) !== '')
-    .forEach(key => command.concat(`--${key}`, getInput(key)))
-  return command
+  return getInput('helmfile-command')
+    .split(' ')
+    .concat(
+      Object.values(HelmfileArgs)
+        .filter(key => getInput(key) !== '')
+        .map(key => `--${key}=${getInput(key)}`),
+    )
 }
 
 const homeDir = getHomeDir()
@@ -31,7 +28,7 @@ async function run(): Promise<void> {
   const helmVersion = getInput('helm-version')
   const helmfileVersion = getInput('helmfile-version')
   const repositoryConfig = getInput('repository-config')
-  const helmfileConfig = getInput('helmfile-file')
+  const helmfileConfig = getInput('helmfile-config')
   const helmUrl = `https://get.helm.sh/helm-v${helmVersion}-${platform}-amd64.tar.gz`
   const helmfileUrl = `https://github.com/roboll/helmfile/releases/download/v${helmfileVersion}/helmfile_${platform}_amd64`
   const repositoryConfigPath = join(workspaceDir, repositoryConfig)
