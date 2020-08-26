@@ -20,15 +20,11 @@
     "lib": [
       "DOM",
       "ES2015.Iterable",
-      "ES2015.Promise",
+      "ES2015.promise",
       "ES2017",
       "ES5"
     ]
   },
-  "exclude": [
-    "build",
-    "dist"
-  ],
   "include": [
     "src/*"
   ]

@@ -6,13 +6,9 @@
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
-    "ecmaFeatures": {}
+    "ecmaFeatures": { }
   },
-  "plugins": [
-    "import",
-    "jest",
-    "github"
-  ],
-  "rules": {},
-  "settings": {}
+  "plugins": [],
+  "rules": { },
+  "settings": { }
 }

@@ -1,4 +1,4 @@
-require('./sourcemap-register.js');module.exports =
+module.exports =
 /******/ (function(modules, runtime) { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The module cache
@@ -1385,6 +1385,76 @@ module.exports = require("https");
 /***/ (function(module) {
 
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 362:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+exports.download = exports.getWorkspaceDir = exports.getOsPlatform = exports.getBinDir = exports.getHomeDir = void 0;
+var tslib_1 = __webpack_require__(422);
+var path_1 = __webpack_require__(622);
+var os_1 = __webpack_require__(87);
+var tool_cache_1 = __webpack_require__(533);
+var io_1 = __webpack_require__(1);
+var exec_1 = __webpack_require__(986);
+var core_1 = __webpack_require__(470);
+function getHomeDir() {
+    var _a, _b;
+    return (_b = (_a = process.env.HOME) !== null && _a !== void 0 ? _a : process.env.USERPROFILE) !== null && _b !== void 0 ? _b : path_1.join(__dirname, '..');
+}
+exports.getHomeDir = getHomeDir;
+function getBinDir() {
+    return path_1.join(getHomeDir(), 'bin');
+}
+exports.getBinDir = getBinDir;
+function getOsPlatform() {
+    return os_1.platform() === 'win32' ? 'windows' : os_1.platform().toLowerCase();
+}
+exports.getOsPlatform = getOsPlatform;
+function getWorkspaceDir() {
+    var _a;
+    return (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : path_1.join(__dirname, '..');
+}
+exports.getWorkspaceDir = getWorkspaceDir;
+function download(url, destination) {
+    return tslib_1.__awaiter(this, void 0, void 0, function () {
+        var downloadPath, destinationDir;
+        return tslib_1.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, tool_cache_1.downloadTool(url)];
+                case 1:
+                    downloadPath = _a.sent();
+                    destinationDir = path_1.dirname(destination);
+                    return [4, io_1.mkdirP(destinationDir)];
+                case 2:
+                    _a.sent();
+                    if (!(url.endsWith('tar.gz') || url.endsWith('tar') || url.endsWith('tgz'))) return [3, 5];
+                    return [4, exec_1.exec('tar', ['-xzf', downloadPath, "--strip=1"])];
+                case 3:
+                    _a.sent();
+                    return [4, io_1.mv(path_1.basename(destination), destinationDir)];
+                case 4:
+                    _a.sent();
+                    return [3, 7];
+                case 5: return [4, io_1.mv(downloadPath, destination)];
+                case 6:
+                    _a.sent();
+                    _a.label = 7;
+                case 7: return [4, exec_1.exec('chmod', ['+x', destination])];
+                case 8:
+                    _a.sent();
+                    core_1.addPath(destinationDir);
+                    return [2, downloadPath];
+            }
+        });
+    });
+}
+exports.download = download;
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 
@@ -5020,20 +5090,18 @@ function isUnixExecutable(stats) {
 "use strict";
 
 exports.__esModule = true;
+exports.run = void 0;
 var tslib_1 = __webpack_require__(422);
 var core_1 = __webpack_require__(470);
 var exec_1 = __webpack_require__(986);
-var download_1 = __webpack_require__(725);
-var os_1 = tslib_1.__importDefault(__webpack_require__(87));
-var osPlat = os_1["default"].platform();
-var platform = osPlat === 'win32' ? 'windows' : osPlat;
-var suffix = osPlat === 'win32' ? '.exe' : '';
-var kopsVersion = core_1.getInput('kops-version') ? "v" + core_1.getInput('kops-version') : 'latest';
-var kopsUrl = "https://github.com/kubernetes/kops/releases/download/" + kopsVersion + "/kops-" + platform + "-amd64" + suffix;
+var path_1 = __webpack_require__(622);
+var index_1 = __webpack_require__(362);
 var KopsArgs;
 (function (KopsArgs) {
     KopsArgs["KUBECONFIG"] = "kubeconfig";
 })(KopsArgs || (KopsArgs = {}));
+var binDir = index_1.getBinDir();
+var platform = index_1.getOsPlatform();
 function getArgsFromInput() {
     return core_1.getInput('command')
         .split(' ')
@@ -5043,16 +5111,18 @@ function getArgsFromInput() {
 }
 function run() {
     return tslib_1.__awaiter(this, void 0, void 0, function () {
-        var error_1;
+        var kopsVersion, kopsUrl, error_1;
         return tslib_1.__generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    core_1.exportVariable('KOPS_CLUSTER_NAME', core_1.getInput('cluster-name'));
-                    core_1.exportVariable('KOPS_STATE_STORE', core_1.getInput('state-store'));
+                    kopsVersion = core_1.getInput('kops-version') ? "" + core_1.getInput('kops-version') : '1.18.0';
+                    kopsUrl = "https://github.com/kubernetes/kops/releases/download/v" + kopsVersion + "/kops-" + platform + "-amd64";
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 5, , 6]);
-                    return [4, download_1.download(kopsUrl, process.env.HOME + "/bin/kops")];
+                    core_1.exportVariable('KOPS_CLUSTER_NAME', core_1.getInput('cluster-name'));
+                    core_1.exportVariable('KOPS_STATE_STORE', core_1.getInput('state-store'));
+                    return [4, index_1.download(kopsUrl, path_1.join(binDir, 'kops'))];
                 case 2:
                     _a.sent();
                     return [4, exec_1.exec('kops', ['export', 'kubecfg'])];
@@ -5071,6 +5141,7 @@ function run() {
         });
     });
 }
+exports.run = run;
 run();
 //# sourceMappingURL=kops.js.map
 
@@ -5105,57 +5176,6 @@ function bytesToUuid(buf, offset) {
 }
 
 module.exports = bytesToUuid;
-
-
-/***/ }),
-
-/***/ 725:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-exports.__esModule = true;
-exports.download = void 0;
-var tslib_1 = __webpack_require__(422);
-var path_1 = tslib_1.__importDefault(__webpack_require__(622));
-var tool_cache_1 = __webpack_require__(533);
-var io_1 = __webpack_require__(1);
-var exec_1 = __webpack_require__(986);
-var core_1 = __webpack_require__(470);
-function download(url, destination) {
-    return tslib_1.__awaiter(this, void 0, void 0, function () {
-        var downloadPath, destinationDir;
-        return tslib_1.__generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4, tool_cache_1.downloadTool(url)];
-                case 1:
-                    downloadPath = _a.sent();
-                    destinationDir = path_1["default"].dirname(destination);
-                    return [4, io_1.mkdirP(destinationDir)];
-                case 2:
-                    _a.sent();
-                    if (!(url.endsWith('tar.gz') || url.endsWith('tar') || url.endsWith('tgz'))) return [3, 5];
-                    return [4, exec_1.exec('tar', ['-xzf', downloadPath, "--strip=1"])];
-                case 3:
-                    _a.sent();
-                    return [4, io_1.mv(path_1["default"].basename(destination), destinationDir)];
-                case 4:
-                    _a.sent();
-                    return [3, 7];
-                case 5: return [4, io_1.mv(downloadPath, destination)];
-                case 6:
-                    _a.sent();
-                    _a.label = 7;
-                case 7: return [4, exec_1.exec('chmod', ['+x', destination])];
-                case 8:
-                    _a.sent();
-                    core_1.addPath(destinationDir);
-                    return [2, downloadPath];
-            }
-        });
-    });
-}
-exports.download = download;
 
 
 /***/ }),
@@ -5412,4 +5432,3 @@ exports.exec = exec;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=index.js.map

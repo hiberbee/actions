@@ -1,0 +1,12 @@
+[submodule "skaffold"]
+	path = skaffold
+	url = git@github.com:hiberbee/github-action-skaffold
+[submodule "kops"]
+	path = kops
+	url = git@github.com:hiberbee/github-action-kops
+[submodule "minikube"]
+	path = minikube
+	url = git@github.com:hiberbee/github-action-minikube
+[submodule "helm"]
+	path = helm
+	url = git@github.com:hiberbee/github-action-helm

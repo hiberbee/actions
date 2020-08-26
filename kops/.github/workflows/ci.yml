@@ -1,13 +1,17 @@
+name: Kops CI
 on:
   push:
     paths:
-      - kops/**
+      - src/**
+      - .github/workflows/**
+      - action.yml
 jobs:
-  cli:
+  validate:
+    name: Validate cluster
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Kops
-        uses: hiberbee/actions/kops@latest
+        uses: hiberbee/github-action-kops@latest
         with:
           command: validate cluster
           cluster-name: k8s.hiberbee.net

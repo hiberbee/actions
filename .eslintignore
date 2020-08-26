@@ -1,3 +1,12 @@
-dist/
-lib/
-node_modules/
+*.iml
+*.md
+.env*
+.eslintcache
+.github
+.idea
+skaffold/test/Dockerfile
+build
+skaffold/test/charts
+lib
+node_modules
+package.json

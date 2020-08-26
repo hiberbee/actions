@@ -1,36 +1,18 @@
-import { addPath, exportVariable, getInput, setFailed } from '@actions/core'
+import { exportVariable, getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
-import { mv, mkdirP } from '@actions/io'
-import { downloadTool } from '@actions/tool-cache'
-import path from 'path'
-import os from 'os'
+import { join } from 'path'
+import { download, getBinDir, getOsPlatform } from './index'
 
-const osPlat = os.platform()
-const platform = osPlat === 'win32' ? 'windows' : osPlat
-const suffix = osPlat === 'win32' ? '.exe' : ''
-
-const kopsVersion = getInput('kops-version') ? `v${getInput('kops-version')}` : 'latest'
-const kopsUrl = `https://github.com/kubernetes/kops/releases/download/${kopsVersion}/kops-${platform}-amd64${suffix}`
-
+// noinspection JSUnusedGlobalSymbols
 enum KopsArgs {
   KUBECONFIG = 'kubeconfig',
 }
 
-async function download(url: string, destination: string): Promise<string> {
-  const downloadPath = await downloadTool(url)
-  const destinationDir = path.dirname(destination)
-  await mkdirP(destinationDir)
-  if (url.endsWith('tar.gz') || url.endsWith('tar') || url.endsWith('tgz')) {
-    await exec('tar', ['-xzf', downloadPath, `--strip=1`])
-    await mv(path.basename(destination), destinationDir)
-  } else {
-    await mv(downloadPath, destination)
-  }
-  await exec('chmod', ['+x', destination])
-  addPath(destinationDir)
-  return downloadPath
-}
-
+const binDir = getBinDir()
+const platform = getOsPlatform()
+/**
+ * @return arguments
+ */
 function getArgsFromInput(): string[] {
   return getInput('command')
     .split(' ')
@@ -41,16 +23,20 @@ function getArgsFromInput(): string[] {
     )
 }
 
-async function run(args: string[]): Promise<void> {
-  exportVariable('KOPS_CLUSTER_NAME', getInput('cluster-name'))
-  exportVariable('KOPS_STATE_STORE', getInput('state-store'))
+export async function run(): Promise<void> {
+  const kopsVersion = getInput('kops-version') ? `${getInput('kops-version')}` : '1.18.0'
+  const kopsUrl = `https://github.com/kubernetes/kops/releases/download/v${kopsVersion}/kops-${platform}-amd64`
+
   try {
-    await exec('kops', args)
+    exportVariable('KOPS_CLUSTER_NAME', getInput('cluster-name'))
+    exportVariable('KOPS_STATE_STORE', getInput('state-store'))
+    await download(kopsUrl, join(binDir, 'kops'))
+    await exec('kops', ['export', 'kubecfg'])
+    await exec('kops', getArgsFromInput())
   } catch (error) {
     setFailed(error.message)
   }
 }
 
-download(kopsUrl, `${process.env.HOME}/bin/kops`)
-  .then(() => run(['export', 'kubecfg']))
-  .then(() => run(getArgsFromInput()))
+// noinspection JSIgnoredPromiseFromCall
+run()
