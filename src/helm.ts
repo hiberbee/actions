@@ -49,7 +49,7 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
     if (getInput('helmfile-command') !== '') {
-      const helmfileConfigArgs = (await exists(helmfileConfig)) ? ['--file', helmfileConfigPath] : []
+      const helmfileConfigArgs = (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : []
       await exec('helmfile', getHelmfileArgsFromInput().concat(helmfileConfigArgs))
     } else if (getInput('helm-command') !== '') {
       await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
