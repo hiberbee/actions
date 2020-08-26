@@ -6,7 +6,6 @@ import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
 enum HelmfileArgs {
-  FILE = 'file',
   ENVIRONMENT = 'environment',
   INTERACTIVE = 'interactive',
   KUBE_CONTEXT = 'kube-context',
@@ -34,9 +33,11 @@ async function run(): Promise<void> {
   const helmVersion = getInput('helm-version')
   const helmfileVersion = getInput('helmfile-version')
   const repositoryConfig = getInput('repository-config')
+  const helmfileConfig = getInput('helmfile-file')
   const helmUrl = `https://get.helm.sh/helm-v${helmVersion}-${platform}-amd64.tar.gz`
   const helmfileUrl = `https://github.com/roboll/helmfile/releases/download/v${helmfileVersion}/helmfile_${platform}_amd64`
   const repositoryConfigPath = join(workspaceDir, repositoryConfig)
+  const helmfileConfigPath = join(workspaceDir, helmfileConfig)
 
   try {
     exportVariable('XDG_CACHE_HOME', cacheDir)
@@ -48,7 +49,8 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
     if (getInput('helmfile-command') !== '') {
-      await exec('helmfile', getHelmfileArgsFromInput())
+      const helmfileConfigArgs = (await exists(helmfileConfig)) ? ['--file', helmfileConfigPath] : []
+      await exec('helmfile', getHelmfileArgsFromInput().concat(helmfileConfigArgs))
     } else if (getInput('helm-command') !== '') {
       await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
     }
