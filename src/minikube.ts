@@ -6,15 +6,15 @@ import { download, getBinDir, getHomeDir, getOsPlatform } from './index'
 
 // noinspection JSUnusedGlobalSymbols
 enum MinikubeArgs {
-  WAIT = '--wait',
-  AUTO_UPDATE_DRIVERS = '--auto-update-drivers',
-  INTERACTIVE = '--interactive',
-  DELETE_ON_FAILURE = '--delete-on-failure',
-  CPUS = '--cpus',
-  MEMORY = '--memory',
-  NODES = '--nodes',
-  NETWORK_PLUGIN = '--network-plugin',
-  KUBERNETES_VERSION = '--kubernetes-version',
+  WAIT = 'wait',
+  AUTO_UPDATE_DRIVERS = 'auto-update-drivers',
+  INTERACTIVE = 'interactive',
+  DELETE_ON_FAILURE = 'delete-on-failure',
+  CPUS = 'cpus',
+  MEMORY = 'memory',
+  NODES = 'nodes',
+  NETWORK_PLUGIN = 'network-plugin',
+  KUBERNETES_VERSION = 'kubernetes-version',
 }
 
 const homeDir = getHomeDir()

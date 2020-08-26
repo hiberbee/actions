@@ -6,11 +6,11 @@ import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
 
 enum HelmfileArgs {
-  FILE = '--file',
-  ENVIRONMENT = '--environment',
-  INTERACTIVE = '--interactive',
-  KUBE_CONTEXT = '--kube-context',
-  LOG_LEVEL = '--log-level',
+  FILE = 'file',
+  ENVIRONMENT = 'environment',
+  INTERACTIVE = 'interactive',
+  KUBE_CONTEXT = 'kube-context',
+  LOG_LEVEL = 'log-level',
 }
 
 function getHelmfileArgsFromInput(): string[] {
