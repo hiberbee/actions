@@ -37,8 +37,8 @@ function getArgsFromInput(): string[] {
 }
 
 async function run(): Promise<void> {
-  const minikubeVersion = getInput('minikube-version') ?? '1.12.3'
-  const kubernetesVersion = getInput('kubernetes-version') ?? '1.18.8'
+  const minikubeVersion = getInput('minikube-version') ?? '1.18.0'
+  const kubernetesVersion = getInput('kubernetes-version') ?? '1.20.0'
   const minikubeUrl = `https://github.com/kubernetes/minikube/releases/download/v${minikubeVersion}/minikube-${platform}-amd64${suffix}`
   const kubectlUrl = `https://storage.googleapis.com/kubernetes-release/release/v${kubernetesVersion}/bin/${platform}/amd64/kubectl${suffix}`
   const options: ExecOptions = {}

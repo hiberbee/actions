@@ -1,6 +1,6 @@
 import { cacheDir } from '@actions/tool-cache'
 import { exec } from '@actions/exec'
-import { getInput, setCommandEcho, setFailed } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getHomeDir, getOsPlatform } from './index'
 import { join } from 'path'
