@@ -1,6 +1,6 @@
 import { exportVariable, getInput, setFailed, info } from '@actions/core'
 import { exec } from '@actions/exec'
-import { download, getOsPlatform, getHomeDir, getBinDir, getWorkspaceDir } from './index'
+import { download, getOsPlatform, getBinDir, getWorkspaceDir } from './index'
 import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
@@ -15,15 +15,14 @@ enum HelmfileArgs {
 
 function getHelmfileArgsFromInput(): string[] {
   return Object.values(HelmfileArgs)
-    .filter(key => getInput(key) !== '')
-    .map(key => `--${key}=${getInput(key)}`)
+    .filter((key) => getInput(key) !== '')
+    .map((key) => `--${key}=${getInput(key)}`)
 }
 
-const homeDir = getHomeDir()
-const binDir = getBinDir()
 const workspaceDir = getWorkspaceDir()
-const cacheDir = join(homeDir, '.cache')
-const helmCacheDir = join(cacheDir, 'helm')
+const binDir = getBinDir(workspaceDir)
+const cacheDir = join(workspaceDir, '.cache')
+const helmCacheDir = join(workspaceDir, 'helm')
 const platform = getOsPlatform()
 const plugins = new Map<string, URL>()
   .set('diff', new URL('https://github.com/databus23/helm-diff'))
@@ -40,8 +39,8 @@ async function run(): Promise<void> {
   const helmfileConfigPath = join(workspaceDir, helmfileConfig)
   const pluginUrls = getInput('plugins')
     .split(',')
-    .filter(name => plugins.has(name))
-    .map(name => plugins.get(name) as URL)
+    .filter((name) => plugins.has(name))
+    .map((name) => plugins.get(name) as URL)
 
   try {
     exportVariable('XDG_CACHE_HOME', cacheDir)

@@ -2,7 +2,7 @@ import { getInput, setFailed, exportVariable, setOutput, error } from '@actions/
 import { exec, ExecOptions } from '@actions/exec'
 import { cacheDir } from '@actions/tool-cache'
 import { join } from 'path'
-import { download, getBinDir, getHomeDir, getOsPlatform } from './index'
+import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 
 // noinspection JSUnusedGlobalSymbols
 enum MinikubeArgs {
@@ -17,8 +17,8 @@ enum MinikubeArgs {
   KUBERNETES_VERSION = 'kubernetes-version',
 }
 
-const homeDir = getHomeDir()
-const binDir = getBinDir()
+const homeDir = getWorkspaceDir()
+const binDir = getBinDir(homeDir)
 const minikubeHomeDir = join(homeDir, '.minikube')
 const platform = getOsPlatform()
 const suffix = platform === 'win32' ? '.exe' : ''
@@ -26,14 +26,14 @@ const suffix = platform === 'win32' ? '.exe' : ''
 function getArgsFromInput(): string[] {
   const addons = getInput('addons')
     .split(',')
-    .filter(item => item !== '')
+    .filter((item) => item !== '')
   return ['start', '--embed-certs']
     .concat(
       Object.values(MinikubeArgs)
-        .filter(key => getInput(key) !== '')
-        .map(key => `--${key}=${getInput(key)}`),
+        .filter((key) => getInput(key) !== '')
+        .map((key) => `--${key}=${getInput(key)}`),
     )
-    .concat(addons.length > 0 ? addons.map(key => `--addons=${key}`) : '')
+    .concat(addons.length > 0 ? addons.map((key) => `--addons=${key}`) : '')
 }
 
 async function run(): Promise<void> {
@@ -48,7 +48,7 @@ async function run(): Promise<void> {
     exportVariable('MINIKUBE_PROFILE_NAME', profile)
     exportVariable('MINIKUBE_HOME', minikubeHomeDir)
     options.listeners = {
-      stdout: data => {
+      stdout: (data) => {
         const ip = data.toString().trim()
         exportVariable('DOCKER_HOST', `tcp://${ip}:2376`)
         exportVariable('DOCKER_TLS_VERIFY', '1')

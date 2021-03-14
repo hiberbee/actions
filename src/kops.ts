@@ -1,14 +1,14 @@
 import { exportVariable, getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { join } from 'path'
-import { download, getBinDir, getOsPlatform } from './index'
+import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 
 // noinspection JSUnusedGlobalSymbols
 enum KopsArgs {
   KUBECONFIG = 'kubeconfig',
 }
 
-const binDir = getBinDir()
+const binDir = getBinDir(getWorkspaceDir())
 const platform = getOsPlatform()
 /**
  * @return arguments
@@ -18,8 +18,8 @@ function getArgsFromInput(): string[] {
     .split(' ')
     .concat(
       Object.values(KopsArgs)
-        .filter(key => getInput(key) !== '')
-        .map(key => `--${key}=${getInput(key)}`),
+        .filter((key) => getInput(key) !== '')
+        .map((key) => `--${key}=${getInput(key)}`),
     )
 }
 

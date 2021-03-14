@@ -5,12 +5,8 @@ import { mkdirP, mv } from '@actions/io'
 import { exec } from '@actions/exec'
 import { addPath } from '@actions/core'
 
-export function getHomeDir(): string {
-  return process.env.HOME ?? process.env.USERPROFILE ?? join(__dirname, '..')
-}
-
-export function getBinDir(): string {
-  return join(getHomeDir(), 'bin')
+export function getBinDir(rootDir: string): string {
+  return join(rootDir, 'bin')
 }
 
 export function getOsPlatform(): string {

@@ -2,7 +2,7 @@ import { cacheDir } from '@actions/tool-cache'
 import { exec } from '@actions/exec'
 import { getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
-import { download, getBinDir, getHomeDir, getOsPlatform } from './index'
+import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
 
 // noinspection JSUnusedGlobalSymbols
@@ -11,7 +11,6 @@ enum SkaffoldArgs {
   CACHE_ARTIFACTS = 'cache-artifacts',
   DEFAULT_REPO = 'default-repo',
   FILENAME = 'filename',
-  INSECURE_REGISTRIES = 'insecure-registries',
   KUBE_CONTEXT = 'kube-context',
   KUBECONFIG = 'kubeconfig',
   NAMESPACE = 'namespace',
@@ -20,9 +19,9 @@ enum SkaffoldArgs {
   TAG = 'tag',
 }
 
-const homeDir = getHomeDir()
-const binDir = getBinDir()
-const skaffoldHomeDir = join(homeDir, '.skaffold')
+const workspaceDir = getWorkspaceDir()
+const binDir = getBinDir(workspaceDir)
+const skaffoldHomeDir = join(workspaceDir, '.skaffold')
 const skaffoldCacheFile = join(skaffoldHomeDir, 'cache')
 
 function getArgsFromInput(): string[] {
@@ -31,8 +30,8 @@ function getArgsFromInput(): string[] {
     .concat(`--cache-file=${skaffoldCacheFile}`)
     .concat(
       Object.values(SkaffoldArgs)
-        .filter(key => getInput(key) !== '')
-        .map(key => `--${key}=${getInput(key)}`),
+        .filter((key) => getInput(key) !== '')
+        .map((key) => `--${key}=${getInput(key)}`),
     )
 }
 
