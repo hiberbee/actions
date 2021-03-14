@@ -46,7 +46,6 @@ async function run(): Promise<void> {
   try {
     await mkdirP(skaffoldHomeDir)
     await download(skaffoldTUrl, join(binDir, 'skaffold'))
-    await exec('sudo ', ['apt-get', 'install', 'libc-bin'])
     if (getInput('skip-tests') === 'false') {
       await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
     }
