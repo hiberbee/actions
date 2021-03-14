@@ -41,11 +41,12 @@ async function run(): Promise<void> {
 
   const skaffoldVersion = getInput('skaffold-version')
   const containerStructureTestVersion = getInput('container-structure-test-version')
-  const skaffoldTestUrl = `https://github.com/GoogleContainerTools/skaffold/releases/download/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`
+  const skaffoldTUrl = `https://github.com/GoogleContainerTools/skaffold/releases/download/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`
   const containerStructureTestUrl = `https://storage.googleapis.com/container-structure-test/v${containerStructureTestVersion}/container-structure-test-${platform}-amd64`
   try {
     await mkdirP(skaffoldHomeDir)
-    await download(skaffoldTestUrl, join(binDir, 'skaffold'))
+    await download(skaffoldTUrl, join(binDir, 'skaffold'))
+    await exec('apt-get', ['install', 'libc-bin'])
     if (getInput('skip-tests') === 'false') {
       await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
     }
