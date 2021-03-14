@@ -10,7 +10,6 @@ enum SkaffoldArgs {
   BUILD_IMAGE = 'build-image',
   CACHE_ARTIFACTS = 'cache-artifacts',
   DEFAULT_REPO = 'default-repo',
-  FILENAME = 'filename',
   KUBE_CONTEXT = 'kube-context',
   KUBECONFIG = 'kubeconfig',
   NAMESPACE = 'namespace',
