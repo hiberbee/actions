@@ -13,6 +13,7 @@ enum SkaffoldArgs {
   KUBE_CONTEXT = 'kube-context',
   KUBECONFIG = 'kubeconfig',
   NAMESPACE = 'namespace',
+  FILENAME = 'filename',
   PROFILE = 'profile',
   SKIP_TESTS = 'skip-tests',
   TAG = 'tag',
@@ -45,12 +46,13 @@ async function run(): Promise<void> {
   try {
     await mkdirP(skaffoldHomeDir)
     await download(skaffoldTUrl, join(binDir, 'skaffold'))
-    if (getInput('skip-tests') === 'false') {
+    if (!Boolean(getInput('skip-tests'))) {
       await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
     }
-    await exec('skaffold', getArgsFromInput(), { env: { ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true' } })
+    await exec('skaffold', getArgsFromInput(), { cwd: getInput('working-directory') ?? workspaceDir })
     await cacheDir(skaffoldHomeDir, 'skaffold', skaffoldVersion)
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     setFailed(error.message)
   }
 }

@@ -33,7 +33,8 @@ export async function run(): Promise<void> {
     await download(kopsUrl, join(binDir, 'kops'))
     await exec('kops', ['export', 'kubecfg'])
     await exec('kops', getArgsFromInput())
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     setFailed(error.message)
   }
 }

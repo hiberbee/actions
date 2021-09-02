@@ -64,7 +64,8 @@ async function run(): Promise<void> {
     await download(kubectlUrl, join(binDir, 'kubectl'))
     await exec('minikube', getArgsFromInput()).then(() => exec('minikube', ['ip'], options))
     await cacheDir(join(minikubeHomeDir, 'cache'), 'minikube', minikubeVersion)
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     setFailed(error.message)
   }
 }

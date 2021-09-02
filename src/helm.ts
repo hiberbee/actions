@@ -26,7 +26,7 @@ const helmCacheDir = join(workspaceDir, 'helm')
 const platform = getOsPlatform()
 const plugins = new Map<string, URL>()
   .set('diff', new URL('https://github.com/databus23/helm-diff'))
-  .set('secrets', new URL('https://github.com/zendesk/helm-secrets'))
+  .set('secrets', new URL('https://github.com/jkroepke/helm-secrets'))
 
 async function run(): Promise<void> {
   const helmVersion = getInput('helm-version')
@@ -62,7 +62,8 @@ async function run(): Promise<void> {
     } else if (getInput('helm-command') !== '') {
       await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
     }
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     setFailed(error.message)
   }
 }
