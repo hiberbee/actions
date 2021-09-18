@@ -7,6 +7,7 @@ import { join } from 'path'
 
 // noinspection JSUnusedGlobalSymbols
 enum HelmfileArgs {
+  SELECTOR = 'selector',
   ENVIRONMENT = 'environment',
   INTERACTIVE = 'interactive',
   KUBE_CONTEXT = 'kube-context',
@@ -16,7 +17,14 @@ enum HelmfileArgs {
 function getHelmfileArgsFromInput(): string[] {
   return Object.values(HelmfileArgs)
     .filter((key) => getInput(key) !== '')
-    .map((key) => `--${key}=${getInput(key)}`)
+    .map<string[]>((key) =>
+      key === HelmfileArgs.SELECTOR
+        ? getInput(HelmfileArgs.SELECTOR)
+            .split(',')
+            .map((it) => `--${key}=${it}`)
+        : [`--${key}=${getInput(key)}`],
+    )
+    .flat(1)
 }
 
 const workspaceDir = getWorkspaceDir()

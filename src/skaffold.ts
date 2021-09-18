@@ -1,6 +1,6 @@
 import { cacheDir } from '@actions/tool-cache'
-import { exec } from '@actions/exec'
-import { getInput, setFailed } from '@actions/core'
+import { exec, ExecOptions } from '@actions/exec'
+import { error, exportVariable, getInput, setFailed, setOutput } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
@@ -43,6 +43,7 @@ async function run(): Promise<void> {
   const containerStructureTestVersion = getInput('container-structure-test-version')
   const skaffoldTUrl = `https://github.com/GoogleContainerTools/skaffold/releases/download/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`
   const containerStructureTestUrl = `https://storage.googleapis.com/container-structure-test/v${containerStructureTestVersion}/container-structure-test-${platform}-amd64`
+
   try {
     await mkdirP(skaffoldHomeDir)
     await download(skaffoldTUrl, join(binDir, 'skaffold'))
