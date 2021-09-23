@@ -1,38 +1,41 @@
-import { cacheDir } from '@actions/tool-cache'
-import { exec, ExecOptions } from '@actions/exec'
-import { error, exportVariable, getInput, setFailed, setOutput } from '@actions/core'
+import { exec } from '@actions/exec'
+import { getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
 
-// noinspection JSUnusedGlobalSymbols
-enum SkaffoldArgs {
-  BUILD_IMAGE = 'build-image',
-  CACHE_ARTIFACTS = 'cache-artifacts',
-  DEFAULT_REPO = 'default-repo',
-  KUBE_CONTEXT = 'kube-context',
-  KUBECONFIG = 'kubeconfig',
-  NAMESPACE = 'namespace',
-  FILENAME = 'filename',
-  PROFILE = 'profile',
-  SKIP_TESTS = 'skip-tests',
-  TAG = 'tag',
-}
+const paramsArgumentsMap: Record<string, string> = {
+  ['concurrency']: 'build-concurrency',
+  ['image']: 'build-image',
+  ['cache']: 'cache-artifacts',
+  ['cache-file']: 'cache-file',
+  ['repository']: 'default-repo',
+  ['tag']: 'tag',
+  ['filename']: 'filename',
+  ['kubeconfig']: 'kubeconfig',
+  ['kube-context']: 'kubeconfig',
+  ['namespace']: 'namespace',
+  ['profile']: 'profile',
+  ['push']: 'push',
+  ['skip-tests']: 'skip-tests',
+} as const
 
 const workspaceDir = getWorkspaceDir()
 const binDir = getBinDir(workspaceDir)
 const skaffoldHomeDir = join(workspaceDir, '.skaffold')
-const skaffoldCacheFile = join(skaffoldHomeDir, 'cache')
 
-function getArgsFromInput(): string[] {
-  return getInput('command')
-    .split(' ')
-    .concat(`--cache-file=${skaffoldCacheFile}`)
-    .concat(
-      Object.values(SkaffoldArgs)
-        .filter((key) => getInput(key) !== '')
-        .map((key) => `--${key}=${getInput(key)}`),
-    )
+function resolveArgsFromAction(): string[] {
+  return getInput('command') === ''
+    ? ['version']
+    : getInput('command')
+        .split(' ')
+        .concat(
+          Object.entries(paramsArgumentsMap)
+            .map(([actionParam, skaffoldArg]) =>
+              getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : '',
+            )
+            .filter(Boolean),
+        )
 }
 
 async function run(): Promise<void> {
@@ -50,8 +53,7 @@ async function run(): Promise<void> {
     if (!Boolean(getInput('skip-tests'))) {
       await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
     }
-    await exec('skaffold', getArgsFromInput(), { cwd: getInput('working-directory') ?? workspaceDir })
-    await cacheDir(skaffoldHomeDir, 'skaffold', skaffoldVersion)
+    await exec('skaffold', resolveArgsFromAction(), { cwd: getInput('working-directory') ?? workspaceDir })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     setFailed(error.message)
