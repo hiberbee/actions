@@ -56,13 +56,14 @@ async function run(): Promise<void> {
     await mkdirP(helmCacheDir)
     await download(helmUrl, join(binDir, 'helm'))
     for (const url of pluginUrls) {
-      await exec('helm', ['plugin', 'install', url.toString()]).catch(info)
+      await exec('helm', ['plugin', 'install', url.toString()], { silent: true }).catch(info)
     }
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
-    if (getInput('helmfile-command') !== '') {
+    if (getInput('command') !== '') {
+    } else if (getInput('command') !== '') {
       const globalArgs = getHelmfileArgsFromInput().concat(
         (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [],
       )
