@@ -5,20 +5,22 @@ import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
 
 const paramsArgumentsMap: Record<string, string> = {
-  ['concurrency']: 'build-concurrency',
-  ['image']: 'build-image',
-  ['cache']: 'cache-artifacts',
-  ['cache-file']: 'cache-file',
-  ['repository']: 'default-repo',
-  ['tag']: 'tag',
-  ['filename']: 'filename',
+  concurrency: 'build-concurrency',
+  image: 'build-image',
+  cache: 'cache-artifacts',
+  [`cache-file`]: 'cache-file',
+  repository: 'default-repo',
+  tag: 'tag',
+  filename: 'filename',
   ['kubeconfig']: 'kubeconfig',
   ['kube-context']: 'kubeconfig',
   ['namespace']: 'namespace',
   ['profile']: 'profile',
   ['push']: 'push',
+  ['verbosity']: 'verbosity',
+  ['interactive']: 'interactive',
   ['skip-tests']: 'skip-tests',
-} as const
+}
 
 const workspaceDir = getWorkspaceDir()
 const binDir = getBinDir(workspaceDir)
@@ -34,7 +36,7 @@ function resolveArgsFromAction(): string[] {
             .map(([actionParam, skaffoldArg]) =>
               getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : '',
             )
-            .filter(Boolean),
+            .filter((it) => it !== ''),
         )
 }
 
