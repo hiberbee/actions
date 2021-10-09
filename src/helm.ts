@@ -1,4 +1,4 @@
-import { exportVariable, getInput, setFailed, info } from '@actions/core'
+import { exportVariable, getInput, setFailed, info, warning } from '@actions/core'
 import { exec } from '@actions/exec'
 import { download, getOsPlatform, getBinDir, getWorkspaceDir } from './index'
 import { mkdirP } from '@actions/io'
@@ -14,7 +14,7 @@ enum HelmfileArgs {
   LOG_LEVEL = 'log-level',
 }
 
-function getHelmfileArgsFromInput(): string[] {
+function getArgsFromInput(): string[] {
   return Object.values(HelmfileArgs)
     .filter((key) => getInput(key) !== '')
     .map<string[]>((key) =>
@@ -56,20 +56,19 @@ async function run(): Promise<void> {
     await mkdirP(helmCacheDir)
     await download(helmUrl, join(binDir, 'helm'))
     for (const url of pluginUrls) {
-      await exec('helm', ['plugin', 'install', url.toString()], { silent: true }).catch(info)
+      await exec('helm', ['plugin', 'install', url.toString()]).catch(warning)
     }
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs))
     }
-    if (getInput('command') !== '') {
-    } else if (getInput('command') !== '') {
-      const globalArgs = getHelmfileArgsFromInput().concat(
+    if (getInput('helmfile') !== '') {
+      const globalArgs = getArgsFromInput().concat(
         (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [],
       )
-      await exec('helmfile', globalArgs.concat(getInput('helmfile-command').split(' ')))
-    } else if (getInput('helm-command') !== '') {
-      await exec('helm', getInput('helm-command').split(' ').concat(repositoryArgs))
+      await exec('helmfile', globalArgs.concat(getInput('helmfile').split(' ')))
+    } else if (getInput('helm') !== '') {
+      await exec('helm', getInput('helm').split(' ').concat(repositoryArgs))
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
