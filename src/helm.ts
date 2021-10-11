@@ -1,4 +1,4 @@
-import { exportVariable, getInput, setFailed, info, warning } from '@actions/core'
+import { exportVariable, getInput, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
 import { download, getOsPlatform, getBinDir, getWorkspaceDir } from './index'
 import { mkdirP } from '@actions/io'
@@ -7,7 +7,7 @@ import { join } from 'path'
 
 // noinspection JSUnusedGlobalSymbols
 enum HelmfileArgs {
-  SELECTOR = 'selector',
+  SELECTOR = 'selectors',
   ENVIRONMENT = 'environment',
   INTERACTIVE = 'interactive',
   KUBE_CONTEXT = 'kube-context',

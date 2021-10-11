@@ -5,21 +5,22 @@ import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
 
 const paramsArgumentsMap: Record<string, string> = {
-  concurrency: 'build-concurrency',
-  image: 'build-image',
-  cache: 'cache-artifacts',
+  ['insecure-registries']: 'insecure-registry',
+  ['kube-context']: 'kubeconfig',
+  ['skip-tests']: 'skip-tests',
   [`cache-file`]: 'cache-file',
+  cache: 'cache-artifacts',
+  concurrency: 'build-concurrency',
+  filename: 'filename',
+  image: 'build-image',
+  interactive: 'interactive',
+  kubeconfig: 'kubeconfig',
+  namespace: 'namespace',
+  profile: 'profile',
+  push: 'push',
   repository: 'default-repo',
   tag: 'tag',
-  filename: 'filename',
-  ['kubeconfig']: 'kubeconfig',
-  ['kube-context']: 'kubeconfig',
-  ['namespace']: 'namespace',
-  ['profile']: 'profile',
-  ['push']: 'push',
-  ['verbosity']: 'verbosity',
-  ['interactive']: 'interactive',
-  ['skip-tests']: 'skip-tests',
+  verbosity: 'verbosity',
 }
 
 const workspaceDir = getWorkspaceDir()
@@ -33,9 +34,9 @@ function resolveArgsFromAction(): string[] {
         .split(' ')
         .concat(
           Object.entries(paramsArgumentsMap)
-            .map(([actionParam, skaffoldArg]) =>
-              getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : '',
-            )
+            .map(([actionParam, skaffoldArg]) => {
+              return getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : ''
+            })
             .filter((it) => it !== ''),
         )
 }
