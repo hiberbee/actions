@@ -7,7 +7,7 @@ import { join } from 'path'
 
 // noinspection JSUnusedGlobalSymbols
 enum HelmfileArgs {
-  SELECTOR = 'selectors',
+  SELECTORS = 'selector',
   ENVIRONMENT = 'environment',
   NAMESPACE = 'namespace',
   INTERACTIVE = 'interactive',
@@ -19,8 +19,8 @@ function getArgsFromInput(): string[] {
   return Object.values(HelmfileArgs)
     .filter((key) => getInput(key) !== '')
     .map<string[]>((key) =>
-      key === HelmfileArgs.SELECTOR
-        ? getInput(HelmfileArgs.SELECTOR)
+      key === HelmfileArgs.SELECTORS
+        ? getInput(HelmfileArgs.SELECTORS)
             .split(',')
             .map((it) => `--${key}=${it}`)
         : [`--${key}=${getInput(key)}`],
