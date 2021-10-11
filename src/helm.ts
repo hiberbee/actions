@@ -9,6 +9,7 @@ import { join } from 'path'
 enum HelmfileArgs {
   SELECTOR = 'selectors',
   ENVIRONMENT = 'environment',
+  NAMESPACE = 'namespace',
   INTERACTIVE = 'interactive',
   KUBE_CONTEXT = 'kube-context',
   LOG_LEVEL = 'log-level',
