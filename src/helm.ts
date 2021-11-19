@@ -51,17 +51,19 @@ async function run(): Promise<void> {
     .filter((name) => plugins.has(name))
     .map((name) => plugins.get(name) as URL)
 
+  const silent = Boolean(getInput('quiet'))
+
   try {
     exportVariable('XDG_CACHE_HOME', cacheDir)
     const repositoryArgs = (await exists(repositoryConfigPath)) ? ['--repository-config', repositoryConfigPath] : []
     await mkdirP(helmCacheDir)
     await download(helmUrl, join(binDir, 'helm'))
     for (const url of pluginUrls) {
-      await exec('helm', ['plugin', 'install', url.toString()]).catch(warning)
+      await exec('helm', ['plugin', 'install', url.toString()], { silent }).catch(warning)
     }
     await download(helmfileUrl, join(binDir, 'helmfile'))
     if (repositoryArgs.length > 0) {
-      await exec('helm', ['repo', 'update'].concat(repositoryArgs))
+      await exec('helm', ['repo', 'update'].concat(repositoryArgs), { silent })
     }
     if (getInput('helmfile') !== '') {
       const globalArgs = getArgsFromInput().concat(
