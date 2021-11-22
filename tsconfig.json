@@ -1,29 +1,29 @@
 {
   "compilerOptions": {
     "allowJs": false,
+    "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "baseUrl": ".",
-    "outDir": "build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "noEmit": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "resolveJsonModule": false,
-    "sourceMap": true,
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "removeComments": true,
     "lib": [
       "DOM",
       "ES2015.Iterable",
       "ES2015.promise",
       "ES2017",
       "ES5"
-    ]
+    ],
+    "noEmit": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outDir": "build",
+    "removeComments": true,
+    "resolveJsonModule": false,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true
   },
   "include": [
     "src/*"

@@ -33,7 +33,7 @@
     "build:kops": "yarn build src/kops.ts --out kops/src"
   },
   "dependencies": {
-    "@actions/cache": "^1.0.7",
+    "@actions/cache": "^1.0.8",
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
     "@actions/io": "^1.1.1",
@@ -46,7 +46,7 @@
     "@typescript-eslint/parser": "^5.4.0",
     "@zeit/ncc": "^0.22.3",
     "cross-env": "^7.0.3",
-    "eslint": "^8.2.0",
+    "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-github": "^4.3.5",
     "eslint-plugin-import": "^2.25.3",
