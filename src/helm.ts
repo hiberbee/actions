@@ -22,7 +22,11 @@ function getArgsFromInput(): string[] {
     .map<string[]>((key) => {
       switch (key) {
         case HelmfileArgs.VALUES:
-          return [`--state-values-set=${getInput(HelmfileArgs.VALUES).split('\n').filter(Boolean).join(',')}`]
+          return getInput(HelmfileArgs.VALUES)
+            .split('\n')
+            .map((it) => it.trim())
+            .filter(Boolean)
+            .map((kv) => `--set=${kv}`)
         case HelmfileArgs.SELECTORS:
           return getInput(HelmfileArgs.SELECTORS)
             .split(',')
