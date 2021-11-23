@@ -78,10 +78,10 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs), { silent })
     }
     if (getInput('helmfile') !== '') {
-      const globalArgs = getArgsFromInput()
-        .concat((await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [])
-        .concat(inlineValuesArgs)
-      await exec('helmfile', globalArgs.concat(getInput('helmfile').split(' ')))
+      const globalArgs = getArgsFromInput().concat(
+        (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [],
+      )
+      await exec('helmfile', globalArgs.concat(getInput('helmfile').split(' ').concat(inlineValuesArgs)))
     } else if (getInput('helm') !== '') {
       await exec('helm', getInput('helm').split(' ').concat(repositoryArgs).concat(inlineValuesArgs))
     }
@@ -92,4 +92,4 @@ async function run(): Promise<void> {
 }
 
 // noinspection JSIgnoredPromiseFromCall
-run();
+run()
