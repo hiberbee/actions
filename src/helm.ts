@@ -1,6 +1,6 @@
 import { exportVariable, getInput, setFailed, warning } from '@actions/core'
 import { exec } from '@actions/exec'
-import { download, getOsPlatform, getBinDir, getWorkspaceDir } from './index'
+import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { mkdirP } from '@actions/io'
 import { exists } from '@actions/io/lib/io-util'
 import { join } from 'path'
@@ -22,11 +22,7 @@ function getArgsFromInput(): string[] {
     .map<string[]>((key) => {
       switch (key) {
         case HelmfileArgs.VALUES:
-          return getInput(HelmfileArgs.VALUES)
-            .split('\n')
-            .map((it) => it.trim())
-            .filter(Boolean)
-            .map((kv) => `--set=${kv}`)
+          return []
         case HelmfileArgs.SELECTORS:
           return getInput(HelmfileArgs.SELECTORS)
             .split(',')
@@ -35,6 +31,7 @@ function getArgsFromInput(): string[] {
           return [`--${key}=${getInput(key)}`]
       }
     })
+    .filter((it) => it.length > 0)
     .flat(1)
 }
 
@@ -66,6 +63,11 @@ async function run(): Promise<void> {
   try {
     exportVariable('XDG_CACHE_HOME', cacheDir)
     const repositoryArgs = (await exists(repositoryConfigPath)) ? ['--repository-config', repositoryConfigPath] : []
+    const inlineValuesArgs = getInput(HelmfileArgs.VALUES)
+      .split('\n')
+      .map((it) => it.trim())
+      .filter(Boolean)
+      .map((kv) => `--set=${kv}`)
     await mkdirP(helmCacheDir)
     await download(helmUrl, join(binDir, 'helm'))
     for (const url of pluginUrls) {
@@ -76,12 +78,12 @@ async function run(): Promise<void> {
       await exec('helm', ['repo', 'update'].concat(repositoryArgs), { silent })
     }
     if (getInput('helmfile') !== '') {
-      const globalArgs = getArgsFromInput().concat(
-        (await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [],
-      )
+      const globalArgs = getArgsFromInput()
+        .concat((await exists(helmfileConfigPath)) ? ['--file', helmfileConfigPath] : [])
+        .concat(inlineValuesArgs)
       await exec('helmfile', globalArgs.concat(getInput('helmfile').split(' ')))
     } else if (getInput('helm') !== '') {
-      await exec('helm', getInput('helm').split(' ').concat(repositoryArgs))
+      await exec('helm', getInput('helm').split(' ').concat(repositoryArgs).concat(inlineValuesArgs))
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -90,4 +92,4 @@ async function run(): Promise<void> {
 }
 
 // noinspection JSIgnoredPromiseFromCall
-run()
+run();
