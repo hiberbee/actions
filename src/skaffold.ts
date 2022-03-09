@@ -47,7 +47,7 @@ async function run(): Promise<void> {
 
   const skaffoldVersion = getInput("skaffold-version");
   const containerStructureTestVersion = getInput("container-structure-test-version");
-  const skaffoldTUrl = `https://github.com/GoogleContainerTools/skaffold/releases/download/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`;
+  const skaffoldTUrl = `https://storage.googleapis.com/skaffold/releases/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`;
   const containerStructureTestUrl = `https://storage.googleapis.com/container-structure-test/v${containerStructureTestVersion}/container-structure-test-${platform}-amd64`;
 
   try {
