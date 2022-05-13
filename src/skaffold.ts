@@ -12,6 +12,7 @@ const paramsArgumentsMap: Record<string, string> = {
   cache: "cache-artifacts",
   concurrency: "build-concurrency",
   filename: "filename",
+  output: "output",
   image: "build-image",
   interactive: "interactive",
   kubeconfig: "kubeconfig",
@@ -56,7 +57,12 @@ async function run(): Promise<void> {
     if (!Boolean(getInput("skip-tests"))) {
       await download(containerStructureTestUrl, join(binDir, "container-structure-test"));
     }
-    await exec("skaffold", resolveArgsFromAction(), { cwd: getInput("working-directory") ?? workspaceDir });
+    let args = resolveArgsFromAction();
+    // Fix: https://github.com/hiberbee/github-action-skaffold/issues/14
+    if (getInput("output") || args.find((each) => each.startsWith("--output"))) {
+      args = args.filter((arg) => !arg.startsWith("--skip-tests"));
+    }
+    await exec("skaffold", args, { cwd: getInput("working-directory") ?? workspaceDir });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     setFailed(error.message);
