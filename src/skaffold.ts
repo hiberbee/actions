@@ -66,6 +66,16 @@ type BuildOutput = {
   builds: ImageBuildOutput[];
 };
 
+/**
+ * Fix: https://github.com/hiberbee/github-action-skaffold/issues/14
+ * @param {string[]} args
+ */
+function filterOutputSkitTests(args: string[]) {
+  return getInput("output") || args.find((each) => each.startsWith("--output"))
+    ? args.filter((arg) => !arg.startsWith("--skip-tests"))
+    : args;
+}
+
 async function run(): Promise<void> {
   const skaffoldTUrl = getBinaryUrl("skaffold", getInput("skaffold-version"));
   const containerStructureTestUrl = getBinaryUrl(
@@ -79,11 +89,7 @@ async function run(): Promise<void> {
     if (!Boolean(getInput("skip-tests"))) {
       await download(containerStructureTestUrl, join(binDir, "container-structure-test"));
     }
-    let args = resolveArgsFromAction();
-    // Fix: https://github.com/hiberbee/github-action-skaffold/issues/14
-    if (getInput("output") || args.find((each) => each.startsWith("--output"))) {
-      args = args.filter((arg) => !arg.startsWith("--skip-tests"));
-    }
+    const args = filterOutputSkitTests(resolveArgsFromAction());
 
     await exec("skaffold", args, {
       cwd: getInput("working-directory") ?? workspaceDir,
