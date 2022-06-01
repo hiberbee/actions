@@ -1,5 +1,5 @@
 import { exec } from "@actions/exec";
-import { getInput, setFailed } from "@actions/core";
+import { setOutput, getInput, setFailed } from "@actions/core";
 import { mkdirP } from "@actions/io";
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from "./index";
 import { join } from "path";
@@ -25,9 +25,24 @@ const paramsArgumentsMap: Record<string, string> = {
 };
 
 const workspaceDir = getWorkspaceDir();
+const platform = getOsPlatform();
+
 const binDir = getBinDir(workspaceDir);
 const skaffoldHomeDir = join(workspaceDir, ".skaffold");
 
+/**
+ * @param {string} name
+ * @param {string} version
+ */
+function getBinaryUrl(name: string, version: string): string {
+  const extension = platform === "windows" ? ".exe" : "";
+
+  return `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension}`;
+}
+
+/**
+ * @return {string[]}
+ */
 function resolveArgsFromAction(): string[] {
   return getInput("command") === ""
     ? ["version"]
@@ -42,14 +57,21 @@ function resolveArgsFromAction(): string[] {
         );
 }
 
-async function run(): Promise<void> {
-  const platform = getOsPlatform();
-  const suffix = platform === "windows" ? ".exe" : "";
+type ImageBuildOutput = {
+  imageName: string;
+  tag: string;
+};
 
-  const skaffoldVersion = getInput("skaffold-version");
-  const containerStructureTestVersion = getInput("container-structure-test-version");
-  const skaffoldTUrl = `https://storage.googleapis.com/skaffold/releases/v${skaffoldVersion}/skaffold-${platform}-amd64${suffix}`;
-  const containerStructureTestUrl = `https://storage.googleapis.com/container-structure-test/v${containerStructureTestVersion}/container-structure-test-${platform}-amd64`;
+type BuildOutput = {
+  builds: ImageBuildOutput[];
+};
+
+async function run(): Promise<void> {
+  const skaffoldTUrl = getBinaryUrl("skaffold", getInput("skaffold-version"));
+  const containerStructureTestUrl = getBinaryUrl(
+    "container-structure-test",
+    getInput("container-structure-test-version")
+  );
 
   try {
     await mkdirP(skaffoldHomeDir);
@@ -62,7 +84,19 @@ async function run(): Promise<void> {
     if (getInput("output") || args.find((each) => each.startsWith("--output"))) {
       args = args.filter((arg) => !arg.startsWith("--skip-tests"));
     }
-    await exec("skaffold", args, { cwd: getInput("working-directory") ?? workspaceDir });
+
+    await exec("skaffold", args, {
+      cwd: getInput("working-directory") ?? workspaceDir,
+    }).then(() =>
+      exec("skaffold", args.concat(["--quiet", "--output='{{json .}}'"]), {
+        listeners: {
+          stdout: (output) => {
+            const data: BuildOutput = JSON.parse(output.toString("utf8"));
+            setOutput("builds", JSON.stringify(data.builds));
+          },
+        },
+      })
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     setFailed(error.message);
