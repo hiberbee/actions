@@ -88,7 +88,7 @@ async function run(): Promise<void> {
     await exec("skaffold", args, {
       cwd: getInput("working-directory") ?? workspaceDir,
     }).then(() =>
-      exec("skaffold", args.concat(["--quiet", "--output='{{json .}}'"]), {
+      exec("skaffold", ["build"].concat(args.slice(1).concat(["--quiet", "--output='{{json .}}'"])), {
         listeners: {
           stdout: (output) => {
             const data: BuildOutput = JSON.parse(output.toString("utf8"));
