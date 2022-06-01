@@ -94,15 +94,19 @@ async function run(): Promise<void> {
     const args = filterOutputSkitTests(resolveArgsFromAction())
 
     await exec('skaffold', args, options).then(() =>
-      exec('skaffold', ['build'].concat(args.slice(1).concat(['--quiet', "--output='{{json .}}'"])), {
-        ...options,
-        listeners: {
-          stdout: (output) => {
-            const data: BuildOutput = JSON.parse(output.toString('utf8'))
-            setOutput('builds', JSON.stringify(data.builds))
+      exec(
+        'skaffold',
+        filterOutputSkitTests(['build'].concat(args.slice(1).concat(['--quiet', "--output='{{json .}}'"]))),
+        {
+          ...options,
+          listeners: {
+            stdout: (output) => {
+              const data: BuildOutput = JSON.parse(output.toString('utf8'))
+              setOutput('builds', JSON.stringify(data.builds))
+            },
           },
         },
-      }),
+      ),
     )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
