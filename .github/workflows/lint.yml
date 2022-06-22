@@ -4,8 +4,6 @@ on:
     paths:
       - src/**
       - .github/workflows/lint.yml
-      - .eslintignore
-      - .eslintrc
 jobs:
   lint:
     name: Lint
@@ -15,10 +13,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Lint Code Base
-        uses: github/super-linter@v3
+        uses: github/super-linter@v4.9.4
         env:
           VALIDATE_ALL_CODEBASE: false
-          VALIDATE_TYPESCRIPT_ES: true
-          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc
           DEFAULT_BRANCH: latest
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
