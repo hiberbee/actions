@@ -3,7 +3,7 @@ import { setOutput, getInput, setFailed } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
-import { ExecOptions } from '@actions/exec/lib/interfaces'
+import type { ExecOptions } from '@actions/exec/lib/interfaces'
 
 const paramsArgumentsMap: Record<string, string> = {
   ['insecure-registries']: 'insecure-registry',
