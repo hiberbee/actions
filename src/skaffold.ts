@@ -22,12 +22,11 @@ const paramsArgumentsMap: Record<string, string> = {
   push: 'push',
   repository: 'default-repo',
   tag: 'tag',
-  verbosity: 'verbosity',
+  verbosity: 'verbosity'
 }
 
 const workspaceDir = getWorkspaceDir()
 const platform = getOsPlatform()
-
 const binDir = getBinDir(workspaceDir)
 const skaffoldHomeDir = join(workspaceDir, '.skaffold')
 
@@ -48,14 +47,14 @@ function resolveArgsFromAction(): string[] {
   return getInput('command') === ''
     ? ['version']
     : getInput('command')
-        .split(' ')
-        .concat(
-          Object.entries(paramsArgumentsMap)
-            .map(([actionParam, skaffoldArg]) => {
-              return getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : ''
-            })
-            .filter((it) => it !== ''),
-        )
+      .split(' ')
+      .concat(
+        Object.entries(paramsArgumentsMap)
+              .map(([actionParam, skaffoldArg]) => {
+                return getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : ''
+              })
+              .filter((it) => it !== '')
+      )
 }
 
 type ImageBuildOutput = {
@@ -81,7 +80,7 @@ async function run(): Promise<void> {
   const skaffoldTUrl = getBinaryUrl('skaffold', getInput('skaffold-version'))
   const containerStructureTestUrl = getBinaryUrl(
     'container-structure-test',
-    getInput('container-structure-test-version'),
+    getInput('container-structure-test-version')
   )
 
   const options: ExecOptions = { cwd: getInput('working-directory') ?? workspaceDir }
@@ -96,17 +95,21 @@ async function run(): Promise<void> {
     await exec('skaffold', args, options).then(() =>
       exec(
         'skaffold',
-        filterOutputSkitTests(['build'].concat(args.slice(1).concat(['--quiet', "--output='{{json .}}'"]))),
+        filterOutputSkitTests(['build'].concat(args.slice(1).concat(['--quiet', '--output=\'{{json .}}\'']))),
         {
           ...options,
           listeners: {
             stdout: (output) => {
-              const data: BuildOutput = JSON.parse(output.toString('utf8'))
-              setOutput('builds', JSON.stringify(data.builds))
-            },
-          },
-        },
-      ),
+              try {
+                const data: BuildOutput = JSON.parse(output.toString('utf8').replace('\'', ''))
+                setOutput('builds', JSON.stringify(data.builds))
+              } catch (e) {
+                setOutput('error', e)
+              }
+            }
+          }
+        }
+      )
     )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
