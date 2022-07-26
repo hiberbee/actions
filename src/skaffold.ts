@@ -43,7 +43,9 @@ const skaffoldHomeDir = join(workspaceDir, '.skaffold')
  * @param {string} version
  */
 function getBinaryUrl(name: Binaries, version: string): string {
-  return `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension}`
+  const url = `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension}`
+  setOutput(`Resolved ${name} url:`, url)
+  return url
 }
 
 /**
@@ -51,7 +53,9 @@ function getBinaryUrl(name: Binaries, version: string): string {
  * @param {string} version
  */
 function getKubernetesBinaryUrl(name: string, version: string): string {
-  return `https://dl.k8s.io/release/${version}/bin/${platform}/amd64/${name}${extension}`
+  const url = `https://dl.k8s.io/release/${version}/bin/${platform}/amd64/${name}${extension}`
+  setOutput(`Resolved ${name} url:`, url)
+  return url
 }
 
 /**
@@ -90,22 +94,24 @@ function filterOutputSkitTests(args: string[]) {
     : args
 }
 
-async function run(): Promise<void> {
+async function downloadAndCheckBinaries() {
   const skaffoldTUrl = getBinaryUrl(Binaries.SKAFFOLD, getInput(`${Binaries.SKAFFOLD}-version`))
   const containerStructureTestUrl = getBinaryUrl(
     Binaries.CONTAINER_STRUCTURE_TEST,
     getInput(`${Binaries.CONTAINER_STRUCTURE_TEST}-version`)
   )
   const kubectlUrl = getKubernetesBinaryUrl(Binaries.KUBECTL, getInput(`${Binaries.KUBECTL}-version`))
+  await download(skaffoldTUrl, join(binDir, Binaries.SKAFFOLD)).then(() => exec(Binaries.SKAFFOLD, ['version']))
+  await download(containerStructureTestUrl, join(binDir, Binaries.CONTAINER_STRUCTURE_TEST)).then(() =>
+    exec(Binaries.CONTAINER_STRUCTURE_TEST, ['version'])
+  )
+  await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() => exec(Binaries.KUBECTL, ['version']))
+}
 
+async function run(): Promise<void> {
   const options: ExecOptions = { cwd: getInput('working-directory') ?? workspaceDir }
   try {
-    await mkdirP(skaffoldHomeDir)
-    await download(skaffoldTUrl, join(binDir, Binaries.SKAFFOLD)).then(() => exec(Binaries.SKAFFOLD, ['version']))
-    await download(containerStructureTestUrl, join(binDir, Binaries.CONTAINER_STRUCTURE_TEST)).then(() =>
-      exec(Binaries.CONTAINER_STRUCTURE_TEST, ['version'])
-    )
-    await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() => exec(Binaries.KUBECTL, ['version']))
+    await mkdirP(skaffoldHomeDir).then(downloadAndCheckBinaries)
     const args = filterOutputSkitTests(resolveArgsFromAction())
 
     await exec(Binaries.SKAFFOLD, args, options).then(() =>
