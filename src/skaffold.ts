@@ -1,5 +1,5 @@
 import { exec } from '@actions/exec'
-import { setOutput, getInput, setFailed } from '@actions/core'
+import { getInput, setFailed, setOutput } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
@@ -33,6 +33,7 @@ enum Binaries {
 
 const workspaceDir = getWorkspaceDir()
 const platform = getOsPlatform()
+const architecture = 'amd64' as const
 const extension = platform === 'windows' ? '.exe' : ''
 
 const binDir = getBinDir(workspaceDir)
@@ -40,30 +41,27 @@ const skaffoldHomeDir = join(workspaceDir, '.skaffold')
 
 /**
  * @param {string} name
- * @param {string} version
  */
-function getBinaryUrl(name: Binaries, version: string): string {
-  const url = `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension}`
-  setOutput(`Resolved ${name} url:`, url)
-  return url
+function getBinaryUrl(name: Binaries): string {
+  return `https://storage.googleapis.com/${name}/releases/v${getInput(
+    `${name}-version`
+  )}/${name}-${platform}-${architecture}${extension}`
 }
 /**
  * @param {string} name
- * @param {string} version
  */
-function getContainerStructureTestBinaryUrl(name: Binaries, version: string): string {
-  const url = `https://storage.googleapis.com/${name}/v${version}/${name}-${platform}-amd64${extension}`
-  setOutput(`Resolved ${name} url:`, url)
-  return url
+function getContainerStructureTestBinaryUrl(name: Binaries): string {
+  return `https://storage.googleapis.com/${name}/v${getInput(
+    `${name}-version`
+  )}/${name}-${platform}-${architecture}${extension}`
 }
 /**
  * @param {string} name
- * @param {string} version
  */
-function getKubernetesBinaryUrl(name: string, version: string): string {
-  const url = `https://dl.k8s.io/release/${version}/bin/${platform}/amd64/${name}${extension}`
-  setOutput(`Resolved ${name} url:`, url)
-  return url
+function getKubernetesBinaryUrl(name: string): string {
+  return `https://storage.googleapis.com/kubernetes-release/release/${name}/${getInput(
+    `${name}-version`
+  )}/bin/${platform}/${architecture}/kubectl${extension}`
 }
 
 /**
@@ -103,12 +101,9 @@ function filterOutputSkitTests(args: string[]) {
 }
 
 async function downloadAndCheckBinaries() {
-  const skaffoldTUrl = getBinaryUrl(Binaries.SKAFFOLD, getInput(`${Binaries.SKAFFOLD}-version`))
-  const containerStructureTestUrl = getContainerStructureTestBinaryUrl(
-    Binaries.CONTAINER_STRUCTURE_TEST,
-    getInput(`${Binaries.CONTAINER_STRUCTURE_TEST}-version`)
-  )
-  const kubectlUrl = getKubernetesBinaryUrl(Binaries.KUBECTL, getInput(`${Binaries.KUBECTL}-version`))
+  const skaffoldTUrl = getBinaryUrl(Binaries.SKAFFOLD)
+  const containerStructureTestUrl = getContainerStructureTestBinaryUrl(Binaries.CONTAINER_STRUCTURE_TEST)
+  const kubectlUrl = getKubernetesBinaryUrl(Binaries.KUBECTL)
   await download(skaffoldTUrl, join(binDir, Binaries.SKAFFOLD)).then(() => exec(Binaries.SKAFFOLD, ['version']))
   await download(containerStructureTestUrl, join(binDir, Binaries.CONTAINER_STRUCTURE_TEST)).then(() =>
     exec(Binaries.CONTAINER_STRUCTURE_TEST, ['version'])
