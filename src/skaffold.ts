@@ -59,9 +59,9 @@ function getContainerStructureTestBinaryUrl(name: Binaries): string {
  * @param {string} name
  */
 function getKubernetesBinaryUrl(name: string): string {
-  return `https://storage.googleapis.com/kubernetes-release/release/${name}/${getInput(
+  return `https://storage.googleapis.com/kubernetes-release/release/v${getInput(
     `${name}-version`
-  )}/bin/${platform}/${architecture}/kubectl${extension}`
+  )}/bin/${platform}/${architecture}/${name}${extension}`
 }
 
 /**
