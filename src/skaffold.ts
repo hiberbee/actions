@@ -15,6 +15,7 @@ const paramsArgumentsMap: Record<string, string> = {
   filename: 'filename',
   output: 'output',
   image: 'build-image',
+  images: 'images',
   interactive: 'interactive',
   kubeconfig: 'kubeconfig',
   namespace: 'namespace',
