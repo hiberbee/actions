@@ -22,7 +22,7 @@ const paramsArgumentsMap: Record<string, string> = {
   push: 'push',
   repository: 'default-repo',
   tag: 'tag',
-  verbosity: 'verbosity'
+  verbosity: 'verbosity',
 }
 
 const workspaceDir = getWorkspaceDir()
@@ -35,9 +35,19 @@ const skaffoldHomeDir = join(workspaceDir, '.skaffold')
  * @param {string} version
  */
 function getBinaryUrl(name: string, version: string): string {
-  const extension = platform === 'windows' ? '.exe' : ''
+  const extension = platform ==="windows"' ?".exe"' :"";'
 
-  return `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension}`
+  return `https://storage.googleapis.com/${name}/releases/v${version}/${name}-${platform}-amd64${extension};`
+}
+
+/**
+ * @param {string} name
+ * @param {string} version
+ */
+function getKubernetesBinaryUrl(name: string, version: string): string {
+  const extension = platform ==="windows"' ?".exe"' :"";'
+
+  return `https://dl.k8s.io/release/${version}/bin/${platform}/amd64/${name}${extension};`
 }
 
 /**
@@ -46,14 +56,14 @@ function getBinaryUrl(name: string, version: string): string {
 function resolveArgsFromAction(): string[] {
   return getInput('command') === ''
     ? ['version']
-    : getInput('command')
-      .split(' ')
+    : getInput("command")
+      .split(" ")
       .concat(
         Object.entries(paramsArgumentsMap)
               .map(([actionParam, skaffoldArg]) => {
-                return getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : ''
+                return getInput(actionParam) !== "" ? `--${skaffoldArg}=${getInput(actionParam)}` : "";
               })
-              .filter((it) => it !== '')
+              .filter((it) => it !== "")
       )
 }
 
@@ -79,32 +89,32 @@ function filterOutputSkitTests(args: string[]) {
 async function run(): Promise<void> {
   const skaffoldTUrl = getBinaryUrl('skaffold', getInput('skaffold-version'))
   const containerStructureTestUrl = getBinaryUrl(
-    'container-structure-test',
-    getInput('container-structure-test-version')
-  )
+    "container-structure-test",
+    getInput("container-structure-test-version")
+  );
+  const kubectlUrl = getKubernetesBinaryUrl("kubectl", getInput("kubectl-version"));
 
   const options: ExecOptions = { cwd: getInput('working-directory') ?? workspaceDir }
   try {
-    await mkdirP(skaffoldHomeDir)
-    await download(skaffoldTUrl, join(binDir, 'skaffold'))
-    if (!Boolean(getInput('skip-tests'))) {
-      await download(containerStructureTestUrl, join(binDir, 'container-structure-test'))
-    }
-    const args = filterOutputSkitTests(resolveArgsFromAction())
+    await mkdirP(skaffoldHomeDir);
+    await download(skaffoldTUrl, join(binDir, "skaffold"));
+    await download(containerStructureTestUrl, join(binDir, "container-structure-test"));
+    await download(kubectlUrl, join(binDir, "kubectl"));
+    const args = filterOutputSkitTests(resolveArgsFromAction());
 
-    await exec('skaffold', args, options).then(() =>
+    await exec("skaffold", args, options).then(() =>
       exec(
-        'skaffold',
-        filterOutputSkitTests(['build'].concat(args.slice(1).concat(['--quiet', '--output=\'{{json .}}\'']))),
+        "skaffold",
+        filterOutputSkitTests(["build"].concat(args.slice(1).concat(["--quiet", "--output='{{json .}}'"]))),
         {
           ...options,
           listeners: {
             stdout: (output) => {
               try {
-                const data: BuildOutput = JSON.parse(output.toString('utf8').replace('\'', ''))
-                setOutput('builds', JSON.stringify(data.builds))
+                const data: BuildOutput = JSON.parse(output.toString("utf8").replace("'", ""));
+                setOutput("builds", JSON.stringify(data.builds));
               } catch (e) {
-                setOutput('error', e)
+                setOutput("error", e);
               }
             }
           }
