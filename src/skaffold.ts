@@ -47,7 +47,15 @@ function getBinaryUrl(name: Binaries, version: string): string {
   setOutput(`Resolved ${name} url:`, url)
   return url
 }
-
+/**
+ * @param {string} name
+ * @param {string} version
+ */
+function getContainerStructureTestBinaryUrl(name: Binaries, version: string): string {
+  const url = `https://storage.googleapis.com/${name}/v${version}/${name}-${platform}-amd64${extension}`
+  setOutput(`Resolved ${name} url:`, url)
+  return url
+}
 /**
  * @param {string} name
  * @param {string} version
@@ -96,7 +104,7 @@ function filterOutputSkitTests(args: string[]) {
 
 async function downloadAndCheckBinaries() {
   const skaffoldTUrl = getBinaryUrl(Binaries.SKAFFOLD, getInput(`${Binaries.SKAFFOLD}-version`))
-  const containerStructureTestUrl = getBinaryUrl(
+  const containerStructureTestUrl = getContainerStructureTestBinaryUrl(
     Binaries.CONTAINER_STRUCTURE_TEST,
     getInput(`${Binaries.CONTAINER_STRUCTURE_TEST}-version`)
   )
