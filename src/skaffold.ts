@@ -121,7 +121,14 @@ async function run(): Promise<void> {
     await exec(Binaries.SKAFFOLD, args, options).then(() =>
       exec(
         Binaries.SKAFFOLD,
-        filterOutputSkitTests(['build'].concat(args.slice(1).concat(['--quiet', "--output='{{json .}}'"]))),
+        filterOutputSkitTests(
+          ['build'].concat(
+            args
+              .slice(1)
+              .filter((it) => !it.startsWith('--output') || !it.startsWith('--quiet'))
+              .concat(['--quiet', "--output='{{json .}}'"])
+          )
+        ),
         {
           ...options,
           listeners: {
