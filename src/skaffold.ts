@@ -13,6 +13,7 @@ const paramsArgumentsMap: Record<string, string> = {
   cache: 'cache-artifacts',
   concurrency: 'build-concurrency',
   filename: 'filename',
+  [`file-output`]: 'file-output',
   output: 'output',
   image: 'build-image',
   images: 'images',
