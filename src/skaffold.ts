@@ -110,7 +110,9 @@ async function downloadAndCheckBinaries() {
   await download(containerStructureTestUrl, join(binDir, Binaries.CONTAINER_STRUCTURE_TEST)).then(() =>
     exec(Binaries.CONTAINER_STRUCTURE_TEST, ['version'])
   )
-  await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() => exec(Binaries.KUBECTL, ['version', '--client=true']))
+  await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() =>
+    exec(Binaries.KUBECTL, ['version', '--client=true'])
+  )
 }
 
 async function run(): Promise<void> {
@@ -136,7 +138,7 @@ async function run(): Promise<void> {
             stdout: (output) => {
               try {
                 const data: BuildOutput = JSON.parse(output.toString('utf8').replace("'", ''))
-                setOutput('output', JSON.stringify(data.builds))
+                setOutput('output', data)
               } catch (e) {
                 setOutput('error', e)
               }
