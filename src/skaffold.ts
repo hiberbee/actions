@@ -110,7 +110,7 @@ async function downloadAndCheckBinaries() {
   await download(containerStructureTestUrl, join(binDir, Binaries.CONTAINER_STRUCTURE_TEST)).then(() =>
     exec(Binaries.CONTAINER_STRUCTURE_TEST, ['version'])
   )
-  await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() => exec(Binaries.KUBECTL, ['version']))
+  await download(kubectlUrl, join(binDir, Binaries.KUBECTL)).then(() => exec(Binaries.KUBECTL, ['version', '--client=true']))
 }
 
 async function run(): Promise<void> {
