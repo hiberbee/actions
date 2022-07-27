@@ -1,5 +1,5 @@
 import { exec } from '@actions/exec'
-import { getInput, setFailed, setOutput } from '@actions/core'
+import { info, getInput, setFailed, setOutput } from '@actions/core'
 import { mkdirP } from '@actions/io'
 import { download, getBinDir, getOsPlatform, getWorkspaceDir } from './index'
 import { join } from 'path'
@@ -121,31 +121,31 @@ async function run(): Promise<void> {
     await mkdirP(skaffoldHomeDir).then(downloadAndCheckBinaries)
     const args = filterOutputSkitTests(resolveArgsFromAction())
 
-    await exec(Binaries.SKAFFOLD, args, options).then(() =>
-      exec(
-        Binaries.SKAFFOLD,
-        filterOutputSkitTests(
-          ['build'].concat(
-            args
-              .slice(1)
-              .filter((it) => !it.startsWith('--output') || !it.startsWith('--quiet'))
-              .concat(['--quiet', "--output='{{json .}}'"])
-          )
-        ),
-        {
-          ...options,
-          listeners: {
-            stdout: (output) => {
-              try {
-                const data: BuildOutput = JSON.parse(output.toString('utf8').replace("'", ''))
-                setOutput('output', data)
-              } catch (e) {
-                setOutput('error', e)
-              }
-            },
+    await exec(Binaries.SKAFFOLD, args, options)
+    await exec(
+      Binaries.SKAFFOLD,
+      filterOutputSkitTests(
+        ['build'].concat(
+          args
+            .slice(1)
+            .filter((it) => !it.startsWith('--output') || !it.startsWith('--quiet'))
+            .concat(['--quiet', "--output='{{json .}}'"])
+        )
+      ),
+      {
+        ...options,
+        listeners: {
+          stdout: (output) => {
+            try {
+              const data: BuildOutput = JSON.parse(output.toString('utf8').replace("'", ''))
+              info(JSON.stringify(data))
+              setOutput('output', data)
+            } catch (e) {
+              setOutput('error', e)
+            }
           },
-        }
-      )
+        },
+      }
     )
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
