@@ -136,7 +136,7 @@ async function run(): Promise<void> {
             stdout: (output) => {
               try {
                 const data: BuildOutput = JSON.parse(output.toString('utf8').replace("'", ''))
-                setOutput('builds', JSON.stringify(data.builds))
+                setOutput('output', JSON.stringify(data.builds))
               } catch (e) {
                 setOutput('error', e)
               }
