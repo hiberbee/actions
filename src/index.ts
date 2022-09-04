@@ -3,7 +3,7 @@ import { platform } from "os";
 import { downloadTool } from "@actions/tool-cache";
 import { mkdirP, mv } from "@actions/io";
 import { exec } from "@actions/exec";
-import { addPath } from "@actions/core";
+import { addPath, } from "@actions/core";
 
 export function getBinDir(rootDir: string): string {
   return join(rootDir, "bin");
