@@ -77,7 +77,6 @@ function resolveArgsFromAction(): string[] {
         .concat(
           Object.entries(paramsArgumentsMap)
             .map(([actionParam, skaffoldArg]) => {
-              if (actionParam === 'cache-file') return `--${skaffoldArg}=${workspaceDir}/${getInput(actionParam)}`
               return getInput(actionParam) !== '' ? `--${skaffoldArg}=${getInput(actionParam)}` : ''
             })
             .filter((it) => it !== '')
