@@ -1,31 +1,14 @@
 {
+  "extends": "@bn-digital/typescript-config/standard.json",
   "compilerOptions": {
-    "allowJs": false,
-    "allowSyntheticDefaultImports": true,
-    "alwaysStrict": true,
     "baseUrl": ".",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "lib": [
-      "DOM",
-      "ES2015.Iterable",
-      "ES2015.promise",
-      "ES2017",
-      "ES5"
-    ],
-    "noEmit": false,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "outDir": "build",
-    "removeComments": true,
-    "resolveJsonModule": false,
-    "sourceMap": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true
+    "outDir": "lib",
+    "target": "es2015",
+    "declaration": true,
+    "noEmit": true,
+    "noEmitOnError": true
   },
   "include": [
-    "src/*"
+    "./src"
   ]
 }
