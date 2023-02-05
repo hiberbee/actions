@@ -1,12 +1,12 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { addPath } from '@actions/core'
-import { exec } from '@actions/exec'
-
-import { mkdirP, mv } from '@actions/io'
-import { downloadTool } from '@actions/tool-cache'
 import { platform } from 'node:os'
 import { basename, dirname, join } from 'node:path'
+
+import { addPath } from '@actions/core'
+import { exec } from '@actions/exec'
+import { mkdirP, mv } from '@actions/io'
+import { downloadTool } from '@actions/tool-cache'
 
 export function getBinDir(rootDir: string): string {
   return join(rootDir, 'bin')

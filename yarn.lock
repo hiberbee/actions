@@ -264,8 +264,10 @@ __metadata:
     "@bn-digital/prettier-config": "npm:^2.1.10"
     "@bn-digital/typescript-config": "npm:^1.1.1"
     "@types/node": "npm:^18.11.19"
+    eslint: "npm:^8.33.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:^13.1.0"
+    prettier: "npm:^2.8.3"
     typescript: "npm:^4.9.5"
   languageName: unknown
   linkType: soft

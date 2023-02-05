@@ -50,13 +50,14 @@
     "@bn-digital/prettier-config": "^2.1.10",
     "@bn-digital/typescript-config": "^1.1.1",
     "@types/node": "^18.11.19",
+    "eslint": "^8.33.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
+    "prettier": "^2.8.3",
     "typescript": "^4.9.5"
   },
   "scripts": {
     "postinstall": "husky install",
-    "lint": "lint-staged",
     "publish": "yarn builld && yarn npm publish"
   }
 }
