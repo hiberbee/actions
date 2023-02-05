@@ -5,7 +5,6 @@
     "outDir": "lib",
     "target": "es2015",
     "declaration": true,
-    "noEmit": true,
     "noEmitOnError": true
   },
   "include": [

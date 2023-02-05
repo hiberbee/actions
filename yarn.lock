@@ -242,9 +242,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hiberbee/github-action-skaffold@workspace:packages/skaffold":
+"@hiberbee/github-actions-skaffold@workspace:packages/skaffold":
   version: 0.0.0-use.local
-  resolution: "@hiberbee/github-action-skaffold@workspace:packages/skaffold"
+  resolution: "@hiberbee/github-actions-skaffold@workspace:packages/skaffold"
   dependencies:
     "@hiberbee/github-actions": "npm:^1.0.0"
     "@vercel/ncc": "npm:^0.36.1"
@@ -252,7 +252,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hiberbee/github-actions@npm:^1.0.0, @hiberbee/github-actions@workspace:.":
+"@hiberbee/github-actions@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@hiberbee/github-actions@npm:1.0.0"
+  dependencies:
+    "@actions/core": "npm:^1.10.0"
+    "@actions/exec": "npm:^1.1.1"
+    "@actions/io": "npm:^1.1.2"
+    "@actions/tool-cache": "npm:^2.0.1"
+  checksum: a789287563457f40c4459b8ab634e0595c869c766928ad878f03f4f0bd19ccee7eebf0abe939da96078b6917f588f9acad5becbcb1bb04c59a1b40d28d84a83e
+  languageName: node
+  linkType: hard
+
+"@hiberbee/github-actions@workspace:.":
   version: 0.0.0-use.local
   resolution: "@hiberbee/github-actions@workspace:."
   dependencies:

@@ -1,7 +1,7 @@
 {
   "name": "@hiberbee/github-actions",
   "description": "Collection of common functions and helpers for GitHub Actions",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "author": {
     "name": "Vlad Volkov",
     "email": "vlad@hiberbee.com",
@@ -58,6 +58,7 @@
   },
   "scripts": {
     "postinstall": "husky install",
-    "publish": "yarn builld && yarn npm publish"
+    "build": "tsc -p .",
+    "publish": "yarn build && yarn npm publish"
   }
 }
