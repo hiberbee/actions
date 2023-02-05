@@ -263,6 +263,7 @@ __metadata:
     "@bn-digital/eslint-config": "npm:^2.0.30"
     "@bn-digital/prettier-config": "npm:^2.1.10"
     "@bn-digital/typescript-config": "npm:^1.1.1"
+    "@types/node": "npm:^18.11.19"
     husky: "npm:^8.0.3"
     lint-staged: "npm:^13.1.0"
     typescript: "npm:^4.9.5"
@@ -445,6 +446,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 4f7f0667d7573ce2888e01e5e887c9661bb2a7e7fd79aae3c57391e812e87cc2fadc4dc1616530f33e63798a011fabe816f41730b511050aba702688466765fd
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.11.19":
+  version: 18.11.19
+  resolution: "@types/node@npm:18.11.19"
+  checksum: 72c822bd403b89a7c1fe59fd9360d29f2373459cdcf890fe6260c7413f936d89e5d154bdeb701bc833936ee88e87776ae9a4dc2b654ba111babbdebac1e67228
   languageName: node
   linkType: hard
 

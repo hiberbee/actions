@@ -4,8 +4,8 @@ import { addPath } from '@actions/core'
 import { exec } from '@actions/exec'
 import { mkdirP, mv } from '@actions/io'
 import { downloadTool } from '@actions/tool-cache'
-import { platform } from 'os'
-import { basename, dirname, join } from 'path'
+import { platform } from 'node:os'
+import { basename, dirname, join } from 'node:path'
 
 export function getBinDir(rootDir: string): string {
   return join(rootDir, 'bin')
