@@ -2,6 +2,7 @@
 
 import { addPath } from '@actions/core'
 import { exec } from '@actions/exec'
+
 import { mkdirP, mv } from '@actions/io'
 import { downloadTool } from '@actions/tool-cache'
 import { platform } from 'node:os'
